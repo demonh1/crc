@@ -58,7 +58,8 @@ namespace CrcTable  {
     0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
 };
 
-// пересчет CRC по таблице с учетом следующего байта
+
+// РїРµСЂРµСЃС‡РµС‚ CRC РїРѕ С‚Р°Р±Р»РёС†Рµ СЃ СѓС‡РµС‚РѕРј СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р°
 DWORD updateCRC( DWORD crcSoFar, const BYTE& nextByte )
 {
     return ( crcSoFar >> 8 ) ^ CrcTable[ ( ( BYTE ) ( crcSoFar & 0x000000ff ) ) ^ nextByte ];
@@ -67,9 +68,9 @@ DWORD updateCRC( DWORD crcSoFar, const BYTE& nextByte )
 
 struct CRC_DATA
 {
-    BYTE label[16];  // метка для поиска места CRC в файле
-    DWORD crc;         // посчитанная CRC файла
-} CrcData = {{"123456789"}, 0}; // здесь задается метка
+    BYTE label[16];  // РјРµС‚РєР° РґР»СЏ РїРѕРёСЃРєР° РјРµСЃС‚Р° CRC РІ С„Р°Р№Р»Рµ
+    DWORD crc;         
+} CrcData = {{"123456789"}, 0}; // Р·РґРµСЃСЊ Р·Р°РґР°РµС‚СЃСЏ РјРµС‚РєР°
 
 }
 
