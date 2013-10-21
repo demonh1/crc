@@ -63,13 +63,13 @@ public:
 
 		if (newsize > 0 && newsize < dwSize)
 		{
-			//ïåðåâîäèì óêàçàòåëü
+			//Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¸Ð¼ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ
 			DWORD result = SetFilePointer(hFile, newsize, 0, FILE_BEGIN);
 
 			if (result != newsize)
 				return FALSE;
 
-			//óñòàíàâëèâàåì íîâûé êîíåö ôàéëà
+			//ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð½Ð¾Ð²Ñ‹Ð¹ ÐºÐ¾Ð½ÐµÑ† Ñ„Ð°Ð¹Ð»Ð°
 			if ( !SetEndOfFile(hFile) )
 				return FALSE;
 		}
