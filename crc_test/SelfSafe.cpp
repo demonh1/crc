@@ -60,7 +60,7 @@ void SelfSafe::newFile(std::string fname){
 	if ( targetFile )
 		targetFile.Close();
 
-	// прверяем на относительное имя
+	// РїСЂРѕРІРµСЂСЏРµРј РЅР° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕРµ РёРјСЏ
 	char drive[_MAX_DRIVE], 
 		dir[_MAX_DIR], 
 		name[_MAX_FNAME],
@@ -75,7 +75,7 @@ void SelfSafe::newFile(std::string fname){
 		fileName = current_dir + std::string("\\") + fname;
 	}
 	else
-	{   // задан полный путь к файлу
+	{       // Р·Р°РґР°РЅ РїРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ
 		fileName = fname;
 	}
 }
@@ -87,16 +87,16 @@ BOOL SelfSafe::checkCRC() {
 
 	BOOL res = FALSE;
 
-	// ищем место, где в файле записана CRC
+	// РёС‰РµРј РјРµСЃС‚Рѕ, РіРґРµ РІ С„Р°Р№Р»Рµ Р·Р°РїРёСЃР°РЅР° CRC
 	if ( openFileAndFindCRCpos(&crcpos) )
 	{
-		// нашли, сравним то что записано в файле с
-		// CRC посчитанной сейчас
+		// РЅР°С€Р»Рё, СЃСЂР°РІРЅРёРј С‚Рѕ С‡С‚Рѕ Р·Р°РїРёСЃР°РЅРѕ РІ С„Р°Р№Р»Рµ СЃ
+		// CRC РїРѕСЃС‡РёС‚Р°РЅРЅРѕР№ СЃРµР№С‡Р°СЃ
 		if ( *reinterpret_cast<DWORD*>(crcpos) == synCRC(crcpos) ) res = TRUE;
 
 		else
 		{
-			//ошибка
+		
 			errstrm.clear();
 			errstrm.str(" ");
 			errstrm << "File '" << fileName << "': wrong value CRC";
@@ -118,10 +118,10 @@ BOOL SelfSafe::writeCRC() {
 
 	BYTE * crcpos = nullptr;
 
-	// результат записи CRC
+	// СЂРµР·СѓР»СЊС‚Р°С‚ Р·Р°РїРёСЃРё CRC
 	BOOL ret = FALSE;
 
-	// ищем место, куда в файл нужно записать CRC
+	// РёС‰РµРј РјРµСЃС‚Рѕ, РєСѓРґР° РІ С„Р°Р№Р» РЅСѓР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ CRC
 	if ( openFileAndFindCRCpos(&crcpos, TRUE) )
 	{
 		*reinterpret_cast<DWORD*>(crcpos) = synCRC(crcpos);
@@ -138,17 +138,17 @@ BOOL SelfSafe::writeCRC() {
 }
 
 DWORD SelfSafe::synCRC(BYTE* crcpos) {
-	// первая половина файла, до места, где CRC
+	
 	DWORD crc = std::accumulate( targetFile.Base(),
 		crcpos,
-		(DWORD) 0, // начальное значение CRC
-		CrcTable::updateCRC ); // функция подсчета CRC
+		(DWORD) 0, 
+		CrcTable::updateCRC ); 
 
-	// пропустили 32 байта места хранения CRC в файле и идем дальше
-	return std::accumulate( crcpos + sizeof(DWORD),  // место после CRC
-		targetFile.Base() + targetFile.Size(),  // конец
-		crc,          // CRC первой половины
-		CrcTable::updateCRC );  //  функция подсчета CRC
+	
+	return std::accumulate( crcpos + sizeof(DWORD),  
+		targetFile.Base() + targetFile.Size(),  
+		crc,          
+		CrcTable::updateCRC );  
 }
 
 BOOL SelfSafe::openFileAndFindCRCpos( BYTE** crcpos, BOOL toWrite) {
@@ -163,7 +163,7 @@ BOOL SelfSafe::openFileAndFindCRCpos( BYTE** crcpos, BOOL toWrite) {
 
 	BYTE* file_end = targetFile.Base() + targetFile.Size();
 
-	// ишщем метку, после которой идет место для CRC
+	
 	BYTE* label_start = std::search( targetFile.Base(),
 		file_end,
 		CrcTable::CrcData.label,
@@ -178,13 +178,11 @@ BOOL SelfSafe::openFileAndFindCRCpos( BYTE** crcpos, BOOL toWrite) {
 		return FALSE;
 	}
 
-	// CRC - сразу после метки и смещения
+	
 	*crcpos = label_start + sizeof(CrcTable::CrcData.label);
 
 	if ( ( *crcpos + sizeof(DWORD) ) > file_end )
 	{
-		// при попытке записи/чтения в это место, вылетим
-		// за конец файла
 		errstrm.clear();
 		errstrm.str(" ");
 		errstrm << "Invalid CRC storage space in file '" 
@@ -192,14 +190,13 @@ BOOL SelfSafe::openFileAndFindCRCpos( BYTE** crcpos, BOOL toWrite) {
 		return FALSE;
 	}
 
-	// метка найдена, на всякий случай ищем вторую,
-	// начиная сразу после первой найденной метки
+	
 	if ( std::search( label_start + sizeof(CrcTable::CrcData.label),
 		file_end,
 		CrcTable::CrcData.label,
 		CrcTable::CrcData.label + sizeof(CrcTable::CrcData.label) ) != file_end )
 	{
-		// нашли две метки
+	
 		errstrm.clear();
 		errstrm.str( "" );
 		errstrm << "In file '" << fileName
